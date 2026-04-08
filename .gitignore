@@ -1,0 +1,29 @@
+.DS_Store
+
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Local editor files
+.idea/
+.vscode/
+
+# Large datasets and generated artifacts
+cifake.zip
+data/raw/
+data/processed/
+data/perturbed/
+baseline/outputs/
+results/*.csv
+!results/results_template.csv
+
+# Model weights and logs
+*.pt
+*.pth
+*.ckpt
+wandb/

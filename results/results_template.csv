@@ -1,0 +1,2 @@
+subset_version,bias_control,model_name,train_size,test_setting,perturbation,accuracy,auc,f1,note
+cifake_v1,yes,,,,,,,

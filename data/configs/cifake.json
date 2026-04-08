@@ -1,0 +1,10 @@
+{
+  "seed": 4210,
+  "raw_root": "data/raw/cifake",
+  "processed_root": "data/processed",
+  "image_size": 256,
+  "jpeg_quality": 95,
+  "val_count_per_class": 2000,
+  "use_small_train_subset": false,
+  "small_train_count_per_class": 10000
+}
