@@ -11,7 +11,6 @@ from common import (
     build_loader,
     evaluate,
     get_device,
-    get_project_root,
     save_checkpoint,
     save_json,
     set_seed,
@@ -52,14 +51,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    project_root = get_project_root()
-    data_root = args.data_root or (project_root / "data" / "processed")
+    data_root = args.data_root or Path("data/processed")
     run_name = (
         f"small_{args.small_train_count}" if args.small_train_count is not None else "full"
     )
-    output_dir = args.output_dir or (
-        project_root / "baseline" / "outputs" / "clip" / run_name
-    )
+    output_dir = args.output_dir or Path("baseline/outputs/clip") / run_name
     output_dir.mkdir(parents=True, exist_ok=True)
 
     set_seed(args.seed)

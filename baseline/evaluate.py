@@ -13,7 +13,6 @@ from common import (
     build_resnet18,
     evaluate,
     get_device,
-    get_project_root,
     save_json,
 )
 
@@ -46,8 +45,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    project_root = get_project_root()
-    data_root = args.data_root or (project_root / "data" / "processed")
+    data_root = args.data_root or Path("data/processed")
     checkpoint = torch.load(args.checkpoint, map_location="cpu")
     model_type = checkpoint["model_type"]
 

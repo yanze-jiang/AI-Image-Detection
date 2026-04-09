@@ -15,7 +15,6 @@ from common import (
     build_transforms,
     evaluate,
     get_device,
-    get_project_root,
     save_json,
 )
 
@@ -84,7 +83,7 @@ def parse_args() -> argparse.Namespace:
         "--data-root",
         type=Path,
         default=None,
-        help="HybridForensics raw root. Defaults to data/benchmarks/hybridforensics/raw.",
+        help="HybridForensics raw root. Defaults to data/hybridforensics/raw.",
     )
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--num-workers", type=int, default=4)
@@ -99,10 +98,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    project_root = get_project_root()
-    data_root = args.data_root or (
-        project_root / "data" / "benchmarks" / "hybridforensics" / "raw"
-    )
+    data_root = args.data_root or Path("data/hybridforensics/raw")
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=True)
     model_type = checkpoint["model_type"]
