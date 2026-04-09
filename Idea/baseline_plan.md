@@ -4,7 +4,7 @@
 
 本项目的主 baseline 选择为：
 
-**冻结 `OpenCLIP ViT-B/32` 图像编码器 + 线性分类头**
+**冻结 `CLIP ViT-B/32` 图像编码器 + 线性分类头**
 
 选择它的理由：
 
@@ -13,7 +13,14 @@
 3. 对课程项目来说，结果更容易稳定复现。
 4. 配合 `CIFAKE` 这类小图像数据集，能够快速完成轻量实验。
 
-如果时间充足，可以额外补一个轻量 CNN baseline，例如 `ResNet18`，作为传统方法对照；但不是第一优先级。
+该 baseline 的方法来源是 `Radford et al., Learning Transferable Visual Models From Natural Language Supervision, ICML 2021` 提出的 `CLIP`。结合当前工程实现，实际采用的是 `transformers` 中的 `openai/clip-vit-base-patch32` 视觉编码器，并在其上接一个线性二分类头。
+
+为了让实验对照更完整，当前工程还额外包含两个 CNN baseline：
+
+1. `ResNet18`
+   来源于经典残差网络 `He et al., Deep Residual Learning for Image Recognition, CVPR 2016`，作为传统 CNN baseline，用于对比预训练视觉编码器与常规残差网络在小样本和扰动条件下的表现。
+2. `MobileNetV3-Small`
+   来源于轻量网络 `Howard et al., Searching for MobileNetV3, ICCV 2019`，作为更轻量、更弱的 CNN baseline，用于和 `ResNet18` 形成容量对照，并帮助说明“轻量化”与“鲁棒性”之间的关系。
 
 ## 2. Baseline 输入输出
 
@@ -106,6 +113,7 @@ baseline 跑完后，至少要回答下面三个问题：
 
 当前 baseline 口径已经固定为：
 
-1. 主 baseline：`OpenCLIP + linear head`
-2. 核心观察：小样本性能下降、压缩敏感性、预处理影响
-3. 交付要求：至少拿到 3 组能支撑改进动机的结果
+1. 主 baseline：`CLIP ViT-B/32 + linear head`
+2. 对照 baseline：`ResNet18`、`MobileNetV3-Small`
+3. 核心观察：小样本性能下降、压缩敏感性、预处理影响
+4. 交付要求：至少拿到 3 组能支撑改进动机的结果

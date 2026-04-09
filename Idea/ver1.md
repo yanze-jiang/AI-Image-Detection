@@ -50,7 +50,8 @@
 整体路线分为三步：
 
 1. **建立 baseline**  
-   第一阶段优先采用一个冻结预训练视觉编码器加线性分类头的 `CLIP-based detector` 作为主要 baseline；如果时间充足，再补充一个轻量 CNN baseline 作为对照。
+   第一阶段优先采用一个冻结预训练视觉编码器加线性分类头的 `CLIP ViT-B/32 + linear head` 作为主要 baseline。该 baseline 来源于 `CLIP` 系列视觉-语言预训练方法，原始方法由 `Radford et al., Learning Transferable Visual Models From Natural Language Supervision, ICML 2021` 提出；结合当前工程实现，实际采用的是 `transformers` 中的 `openai/clip-vit-base-patch32` 视觉编码器，并在其上接一个线性二分类头。选择这一 baseline 的原因是其预训练视觉语义特征较强、训练成本低，并且天然适合作为后续双流融合模型中的语义分支。  
+   为了形成更完整的对照实验，项目还设置两个 CNN baseline。第一个是 `ResNet18`，来源于经典残差网络 `He et al., Deep Residual Learning for Image Recognition, CVPR 2016`，作为传统 CNN 代表；第二个是 `MobileNetV3-Small`，来源于轻量网络 `Howard et al., Searching for MobileNetV3, ICCV 2019`，作为更轻量、更弱的 CNN baseline。二者将用于和 `CLIP` 基线比较在小样本、轻量化约束和扰动测试下的性能差异。
 
 2. **构建双流模型**  
    一条分支提取高层视觉语义特征，另一条分支提取 SRM 残差或 DCT 频域统计特征；随后通过拼接或小型 MLP 完成融合分类。第一版改进模型不追求复杂结构，重点保证复现简单、对比清晰。
@@ -64,9 +65,10 @@
 
 我们预期：
 
-1. 冻结式 CLIP baseline 在标准测试集上能取得不错结果，但在压缩和缩放扰动场景下会明显退化；
+1. 冻结式 `CLIP ViT-B/32 + linear head` baseline 在标准测试集上能取得不错结果，但在压缩和缩放扰动场景下会明显退化；
 2. 加入底层取证特征后，模型在扰动场景下的鲁棒性会有所提升；
-3. 经过偏差控制后的实验结果会更可信，也更能体现方法本身是否有效。
+3. `ResNet18` 与 `MobileNetV3-Small` 这类 CNN baseline 预计在小样本和分布扰动下更容易出现性能下降，从而为后续融合方法提供清晰的对照参照；
+4. 经过偏差控制后的实验结果会更可信，也更能体现方法本身是否有效。
 
 ## 7. 与课程内容的关联
 
