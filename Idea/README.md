@@ -20,6 +20,9 @@
 6. `hybridforensics_note.md`
    第二 benchmark `HybridForensics` 的数据说明、首轮外部测试结果和可直接用于报告的文字表述。
 
+7. `../data/hemg_processed/README.md`
+   `Hemg` 数据集的 `8/1/1` 切分说明，默认随机种子固定为 `4210`。
+
 ## 建议使用顺序
 
 如果你现在准备正式开工，建议按下面顺序推进：
@@ -29,6 +32,8 @@
 3. 按 `baseline_plan.md` 先跑第一版结果
 4. 再根据 `fusion_model_plan.md` 做改进模型
 5. 最后按照 `report_and_presentation.md` 整理汇报材料
+
+当前项目文档默认把复现实验的随机种子统一记为 `4210`。
 
 ## 当前项目的一句话版本
 

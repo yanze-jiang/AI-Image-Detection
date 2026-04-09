@@ -104,6 +104,7 @@ def main() -> None:
     config_path = args.config.resolve()
     workspace_root = config_path.parents[2]
     config = load_config(config_path)
+    config["seed"] = int(config.get("seed", 4210))
 
     raw_root = resolve_path(workspace_root, config["raw_root"])
     processed_root = resolve_path(workspace_root, config["processed_root"])
@@ -112,7 +113,7 @@ def main() -> None:
         shutil.rmtree(processed_root)
     processed_root.mkdir(parents=True, exist_ok=True)
 
-    rng = random.Random(int(config["seed"]))
+    rng = random.Random(config["seed"])
     val_count = int(config["val_count_per_class"])
     use_small_train_subset = bool(config["use_small_train_subset"])
     small_train_count = int(config["small_train_count_per_class"])

@@ -14,6 +14,8 @@
    作为预训练视觉表征 baseline，对应 CLIP 论文：
    `Radford et al., Learning Transferable Visual Models From Natural Language Supervision, ICML 2021`
 
+统一复现实验时，训练脚本默认随机种子固定为 `4210`。
+
 ## 目录说明
 
 - `common.py`：数据加载、模型构建、训练和评估的公共函数
@@ -40,16 +42,18 @@ data/perturbed/
   test_resize/
 ```
 
+如果使用 `Hemg` 自划分数据，则把 `--data-root` 指向 `data/hemg_processed/`。
+
 ## 1. 训练 ResNet18 baseline
 
 ```bash
-python "baseline/train_resnet18.py"
+python "baseline/train_resnet18.py" --seed 4210
 ```
 
 如果要做小样本对比：
 
 ```bash
-python "baseline/train_resnet18.py" --small-train-count 10000
+python "baseline/train_resnet18.py" --small-train-count 10000 --seed 4210
 ```
 
 ## 2. 训练 CLIP baseline
@@ -57,25 +61,25 @@ python "baseline/train_resnet18.py" --small-train-count 10000
 先训练更弱 CNN baseline：
 
 ```bash
-python "baseline/train_mobilenetv3_small.py"
+python "baseline/train_mobilenetv3_small.py" --seed 4210
 ```
 
 如果要做小样本对比：
 
 ```bash
-python "baseline/train_mobilenetv3_small.py" --small-train-count 10000
+python "baseline/train_mobilenetv3_small.py" --small-train-count 10000 --seed 4210
 ```
 
 ## 3. 训练 CLIP baseline
 
 ```bash
-python "baseline/train_clip.py"
+python "baseline/train_clip.py" --seed 4210
 ```
 
 如果要做小样本对比：
 
 ```bash
-python "baseline/train_clip.py" --small-train-count 10000
+python "baseline/train_clip.py" --small-train-count 10000 --seed 4210
 ```
 
 第一次运行 `CLIP` 时，`transformers` 会自动下载 `openai/clip-vit-base-patch32` 权重。

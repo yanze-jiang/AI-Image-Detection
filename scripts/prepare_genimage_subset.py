@@ -146,6 +146,7 @@ def main() -> None:
     config_path = args.config.resolve()
     workspace_root = config_path.parents[2]
     config = load_config(config_path)
+    config["seed"] = int(config.get("seed", 4210))
 
     raw_root = resolve_path(workspace_root, config["raw_root"])
     processed_root = resolve_path(workspace_root, config["processed_root"])

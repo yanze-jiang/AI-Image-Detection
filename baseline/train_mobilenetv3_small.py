@@ -21,9 +21,11 @@ from common import (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Train a MobileNetV3-Small baseline on CIFAKE."
+        description="Train a MobileNetV3-Small baseline on the processed Hemg dataset."
     )
-    parser.add_argument("--data-root", type=Path, default=None, help="Processed CIFAKE root.")
+    parser.add_argument(
+        "--data-root", type=Path, default=None, help="Processed Hemg root."
+    )
     parser.add_argument("--output-dir", type=Path, default=None, help="Output directory.")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=32)
@@ -54,7 +56,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     project_root = get_project_root()
-    data_root = args.data_root or (project_root / "data" / "processed")
+    data_root = args.data_root or (project_root / "data" / "hemg_processed")
     run_name = (
         f"small_{args.small_train_count}" if args.small_train_count is not None else "full"
     )

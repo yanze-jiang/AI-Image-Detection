@@ -1,13 +1,16 @@
 # DDA4210 Course Project
 
-本仓库用于完成课程项目 **“面向资源受限场景的 AI 生成图像检测”**。项目围绕 `CIFAKE` 训练集、压缩/缩放扰动测试，以及 `HybridForensics` 外部 benchmark 展开，目标是在有限算力条件下构建一个 **轻量、可复现、便于对比** 的图像真伪检测方案。
+本仓库用于完成课程项目 **“面向资源受限场景的 AI 生成图像检测”**。项目围绕 `CIFAKE` 主训练集、`Hemg` 自划分补充训练集、压缩/缩放扰动测试，以及 `HybridForensics` 外部 benchmark 展开，目标是在有限算力条件下构建一个 **轻量、可复现、便于对比** 的图像真伪检测方案。
 
 当前工程已经包含：
 
 - 数据准备与扰动构建脚本
+- `Hemg` 本地切分脚本
 - `MobileNetV3-Small`、`ResNet18`、`CLIP + linear head` baseline
 - `HybridForensics` 外部测试脚本
 - 项目方案、实验计划与汇报材料草稿
+
+统一复现实验时，默认随机种子固定为 `4210`。
 
 ## 当前项目状态
 
@@ -21,11 +24,12 @@
 
 ## 仓库结构
 
-- `Idea/`：项目方案、数据协议、baseline 计划、融合模型计划、汇报材料建议
+- `idea/`：项目方案、数据协议、baseline 计划、融合模型计划、汇报材料建议
 - `scripts/`：数据准备、子集构建、扰动生成脚本
 - `baseline/`：baseline 训练、评估、结果记录与 `HybridForensics` 测试代码
-- `data/configs/`：数据准备配置
-- `data/benchmarks/hybridforensics/`：外部 benchmark 说明
+- `data/CIFAKE/`：`CIFAKE` 数据处理说明与配置
+- `data/hemg_processed/`：`Hemg` 切分后的训练目录与说明
+- `data/hybridforensics/`：外部 benchmark 说明
 - `results/`：实验结果记录模板
 
 ## 环境依赖
@@ -43,19 +47,28 @@ pip install -r requirements.txt
 ### 1. 准备 `CIFAKE`
 
 ```bash
-python "scripts/prepare_cifake.py" --config "data/configs/cifake.json"
+python "scripts/prepare_cifake.py" --config "data/CIFAKE/cifake.json"
 python "scripts/build_perturbations.py" --source-root "data/processed" --output-root "data/perturbed"
 ```
 
-### 2. 训练 baseline
+### 2. 准备 `Hemg`
 
 ```bash
-python "baseline/train_mobilenetv3_small.py"
-python "baseline/train_resnet18.py"
-python "baseline/train_clip.py"
+python "scripts/download_hemg.py"
+python "scripts/prepare_hemg_split.py" --clean
 ```
 
-### 3. 评估标准测试集
+### 3. 训练 baseline
+
+```bash
+python "baseline/train_mobilenetv3_small.py" --seed 4210
+python "baseline/train_resnet18.py" --seed 4210
+python "baseline/train_clip.py" --seed 4210
+```
+
+如果使用 `Hemg`，把 `--data-root` 改成 `data/hemg_processed` 即可。
+
+### 4. 评估标准测试集
 
 ```bash
 python "baseline/evaluate.py" \
@@ -64,7 +77,7 @@ python "baseline/evaluate.py" \
   --split "test"
 ```
 
-### 4. 评估 `HybridForensics`
+### 5. 评估 `HybridForensics`
 
 ```bash
 python "baseline/evaluate_hybridforensics.py" \
@@ -101,7 +114,8 @@ git push -u origin feat-your-task
 
 ## 进一步阅读
 
-- 项目说明：`Idea/README.md`
-- 方案初稿：`Idea/ver1.md`
-- 数据准备：`data/README.md`
+- 项目说明：`idea/README.md`
+- 方案初稿：`idea/ver1.md`
+- `CIFAKE` 数据准备：`data/CIFAKE/README.md`
+- `Hemg` 数据准备：`data/hemg_processed/README.md`
 - baseline 说明：`baseline/README.md`
