@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import json
 import random
+import shlex
+import subprocess
+import sys
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -48,6 +52,123 @@ class FrozenCLIPClassifier(nn.Module):
 
 def get_project_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
+
+def to_record_path(path: Path | None) -> str:
+    if path is None:
+        return ""
+    try:
+        return str(path.relative_to(get_project_root()))
+    except ValueError:
+        return str(path)
+
+
+def get_current_command() -> str:
+    return " ".join(shlex.quote(arg) for arg in sys.argv)
+
+
+def get_git_commit() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=get_project_root(),
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip()
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return "需手动填写"
+
+
+def load_experiment_record_template() -> dict[str, Any]:
+    template_path = get_project_root() / "实验记录要求" / "实验记录模板.json"
+    with template_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def result_to_metrics(result: EvalResult | None) -> dict[str, Any]:
+    if result is None:
+        return {
+            "accuracy": None,
+            "auc": None,
+            "f1": None,
+            "loss": None,
+        }
+    return {
+        "accuracy": result.accuracy,
+        "auc": result.auc,
+        "f1": result.f1,
+        "loss": result.loss,
+    }
+
+
+def build_record_base(
+    *,
+    record_type: str,
+    stage: str,
+    tags: list[str],
+    seed: int,
+    device: str | torch.device,
+    script_path: str,
+) -> dict[str, Any]:
+    record = load_experiment_record_template()
+    record["record_type"] = record_type
+    record["experiment_id"] = "需手动填写"
+    record["run_id"] = "需手动填写"
+    record["date"] = date.today().isoformat()
+    record["owner"] = "需手动填写"
+    record["stage"] = stage
+    record["tags"] = tags
+    record["include_in_report"] = False
+    record["include_in_ppt"] = False
+    record["git_commit"] = get_git_commit()
+    record["script_path"] = script_path
+    record["command"] = get_current_command()
+    record["seed"] = seed
+    record["device"] = str(device)
+    record["purpose"] = "需手动填写"
+    record["hypothesis"] = "需手动填写"
+    record["compare_to"] = ["需手动填写"]
+    record["summary"]["main_finding"] = "需手动填写"
+    record["summary"]["failure_mode"] = "需手动填写"
+    record["summary"]["next_action"] = "需手动填写"
+    record["summary"]["report_sentence"] = "需手动填写"
+    return record
+
+
+def build_evaluation_entry(
+    *,
+    checkpoint_path: Path,
+    eval_type: str,
+    data_root: Path,
+    split: str,
+    perturbation_type: str,
+    result: EvalResult,
+    num_samples: int,
+    skipped_files: list[str] | None = None,
+    jpeg_quality: int | None = None,
+    resize_setting: str | None = None,
+    note: str = "",
+    enabled: bool = True,
+) -> dict[str, Any]:
+    return {
+        "eval_id": "需手动填写",
+        "enabled": enabled,
+        "checkpoint_path": to_record_path(checkpoint_path),
+        "eval_type": eval_type,
+        "data_root": to_record_path(data_root),
+        "split": split,
+        "perturbation": {
+            "type": perturbation_type,
+            "jpeg_quality": jpeg_quality,
+            "resize_setting": resize_setting,
+        },
+        "metrics": result_to_metrics(result),
+        "num_samples": num_samples,
+        "skipped_files": skipped_files or [],
+        "note": note or "需手动填写",
+    }
 
 
 def set_seed(seed: int) -> None:

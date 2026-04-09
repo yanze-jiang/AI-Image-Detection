@@ -7,10 +7,14 @@ import torch
 import torch.nn as nn
 
 from common import (
+    EvalResult,
+    build_evaluation_entry,
     build_loader,
     build_mobilenet_v3_small,
+    build_record_base,
     evaluate,
     get_device,
+    result_to_metrics,
     save_checkpoint,
     save_json,
     set_seed,
@@ -101,6 +105,8 @@ def main() -> None:
 
     best_val_auc = -1.0
     best_epoch = -1
+    best_val_result: EvalResult | None = None
+    last_train_loss: float | None = None
     wait = 0
     history: list[dict[str, float | int]] = []
     checkpoint_path = output_dir / "best.pt"
@@ -136,10 +142,12 @@ def main() -> None:
             f"epoch={epoch} train_loss={train_loss:.4f} "
             f"val_auc={val_result.auc:.4f} val_acc={val_result.accuracy:.4f}"
         )
+        last_train_loss = train_loss
 
         if val_result.auc > best_val_auc:
             best_val_auc = val_result.auc
             best_epoch = epoch
+            best_val_result = val_result
             wait = 0
             save_checkpoint(
                 checkpoint_path,
@@ -168,20 +176,82 @@ def main() -> None:
         progress_desc="test",
     )
 
-    summary = {
-        "model_type": "mobilenet_v3_small",
-        "device": str(device),
-        "data_root": str(data_root),
-        "small_train_count": args.small_train_count,
-        "pretrained": not args.no_pretrained,
-        "best_epoch": best_epoch,
-        "best_val_auc": best_val_auc,
-        "test_loss": test_result.loss,
-        "test_accuracy": test_result.accuracy,
-        "test_auc": test_result.auc,
-        "test_f1": test_result.f1,
-        "history": history,
-    }
+    summary = build_record_base(
+        record_type="train_and_eval",
+        stage="baseline",
+        tags=["baseline", "mobilenet_v3_small"],
+        seed=args.seed,
+        device=device,
+        script_path="baseline/train_mobilenetv3_small.py",
+    )
+    summary["experiment_id"] = f"mobilenet_v3_small_{run_name}_train_and_eval"
+    summary["run_id"] = f"mobilenet_v3_small_{run_name}"
+    summary["data"].update(
+        {
+            "train_data_root": str(data_root),
+            "val_data_root": str(data_root),
+            "test_data_root": str(data_root),
+            "benchmark_data_root": "需手动填写",
+            "train_split": "train",
+            "val_split": "val",
+            "test_split": "test",
+            "bias_control": True,
+            "train_size_per_class": (
+                str(args.small_train_count)
+                if args.small_train_count is not None
+                else "full"
+            ),
+            "input_resolution": 224,
+            "save_format": "jpeg",
+            "preprocess_note": "需手动填写",
+        }
+    )
+    summary["model"].update(
+        {
+            "model_name": "mobilenet_v3_small",
+            "method_family": "baseline",
+            "backbone": "MobileNetV3-Small",
+            "pretrained": not args.no_pretrained,
+            "frozen_backbone": False,
+            "forensic_branch": "none",
+            "fusion_method": "none",
+        }
+    )
+    summary["training"].update(
+        {
+            "enabled": True,
+            "output_dir": str(output_dir),
+            "checkpoint_path": str(checkpoint_path),
+            "loss_fn": "CrossEntropyLoss",
+            "optimizer": "AdamW",
+            "lr": args.lr,
+            "weight_decay": args.weight_decay,
+            "batch_size": args.batch_size,
+            "epochs": args.epochs,
+            "patience": args.patience,
+            "best_epoch": best_epoch,
+            "train_loss": last_train_loss,
+            "val_metrics": result_to_metrics(best_val_result),
+            "in_domain_test_metrics": result_to_metrics(test_result),
+        }
+    )
+    summary["evaluations"] = [
+        build_evaluation_entry(
+            checkpoint_path=checkpoint_path,
+            eval_type="in_domain_test",
+            data_root=data_root,
+            split="test",
+            perturbation_type="none",
+            result=test_result,
+            num_samples=len(test_loader.dataset),
+            note="自动记录：标准测试集结果",
+        )
+    ]
+    summary["summary"]["main_finding"] = "需手动填写"
+    summary["summary"]["failure_mode"] = "需手动填写"
+    summary["summary"]["next_action"] = "需手动填写"
+    summary["summary"]["report_sentence"] = "需手动填写"
+    summary["history"] = history
     save_json(output_dir / "summary.json", summary)
     print("Final test metrics:")
     print(

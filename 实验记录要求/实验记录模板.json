@@ -1,0 +1,144 @@
+{
+  "schema_version": "v1",
+  "record_type": "train_and_eval",
+  "experiment_id": "",
+  "run_id": "",
+  "date": "",
+  "owner": "",
+  "stage": "baseline",
+  "tags": [],
+  "include_in_report": false,
+  "include_in_ppt": false,
+  "git_commit": "",
+  "script_path": "",
+  "command": "",
+  "seed": 4210,
+  "device": "",
+  "purpose": "",
+  "hypothesis": "",
+  "compare_to": [],
+  "data": {
+    "train_data_root": "",
+    "val_data_root": "",
+    "test_data_root": "",
+    "benchmark_data_root": "",
+    "train_split": "train",
+    "val_split": "val",
+    "test_split": "test",
+    "bias_control": true,
+    "train_size_per_class": "",
+    "input_resolution": 224,
+    "save_format": "jpeg",
+    "preprocess_note": ""
+  },
+  "model": {
+    "model_name": "",
+    "method_family": "baseline",
+    "backbone": "",
+    "pretrained": true,
+    "frozen_backbone": false,
+    "forensic_branch": "none",
+    "fusion_method": "none"
+  },
+  "training": {
+    "enabled": true,
+    "output_dir": "",
+    "checkpoint_path": "",
+    "loss_fn": "CrossEntropyLoss",
+    "optimizer": "AdamW",
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "epochs": 10,
+    "patience": 3,
+    "best_epoch": null,
+    "train_loss": null,
+    "val_metrics": {
+      "accuracy": null,
+      "auc": null,
+      "f1": null,
+      "loss": null
+    },
+    "in_domain_test_metrics": {
+      "accuracy": null,
+      "auc": null,
+      "f1": null,
+      "loss": null
+    }
+  },
+  "evaluations": [
+    {
+      "eval_id": "",
+      "enabled": true,
+      "checkpoint_path": "",
+      "eval_type": "in_domain_test",
+      "data_root": "",
+      "split": "test",
+      "perturbation": {
+        "type": "none",
+        "jpeg_quality": null,
+        "resize_setting": null
+      },
+      "metrics": {
+        "accuracy": null,
+        "auc": null,
+        "f1": null,
+        "loss": null
+      },
+      "num_samples": null,
+      "skipped_files": [],
+      "note": ""
+    },
+    {
+      "eval_id": "",
+      "enabled": false,
+      "checkpoint_path": "",
+      "eval_type": "robustness",
+      "data_root": "",
+      "split": "test_jpeg85",
+      "perturbation": {
+        "type": "jpeg",
+        "jpeg_quality": 85,
+        "resize_setting": null
+      },
+      "metrics": {
+        "accuracy": null,
+        "auc": null,
+        "f1": null,
+        "loss": null
+      },
+      "num_samples": null,
+      "skipped_files": [],
+      "note": ""
+    },
+    {
+      "eval_id": "",
+      "enabled": false,
+      "checkpoint_path": "",
+      "eval_type": "cross_dataset",
+      "data_root": "data/hybridforensics/raw",
+      "split": "hybridforensics",
+      "perturbation": {
+        "type": "none",
+        "jpeg_quality": null,
+        "resize_setting": null
+      },
+      "metrics": {
+        "accuracy": null,
+        "auc": null,
+        "f1": null,
+        "loss": null
+      },
+      "num_samples": null,
+      "skipped_files": [],
+      "note": ""
+    }
+  ],
+  "summary": {
+    "main_finding": "",
+    "failure_mode": "",
+    "is_abnormal": false,
+    "next_action": "",
+    "report_sentence": ""
+  }
+}

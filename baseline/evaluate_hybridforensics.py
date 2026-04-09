@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import torch
@@ -9,12 +10,15 @@ from PIL import Image, UnidentifiedImageError
 from torch.utils.data import DataLoader, Dataset
 
 from common import (
+    build_evaluation_entry,
     build_clip_classifier,
     build_mobilenet_v3_small,
+    build_record_base,
     build_resnet18,
     build_transforms,
     evaluate,
     get_device,
+    result_to_metrics,
     save_json,
 )
 
@@ -105,12 +109,18 @@ def main() -> None:
     if model_type == "resnet18":
         model = build_resnet18(num_classes=2, pretrained=False)
         transform_model_type = "resnet"
+        backbone = "ResNet18"
+        frozen_backbone = False
     elif model_type == "mobilenet_v3_small":
         model = build_mobilenet_v3_small(num_classes=2, pretrained=False)
         transform_model_type = "resnet"
+        backbone = "MobileNetV3-Small"
+        frozen_backbone = False
     elif model_type == "clip":
         model = build_clip_classifier(model_name=checkpoint["clip_model_name"], num_classes=2)
         transform_model_type = "clip"
+        backbone = "CLIP ViT-B/32"
+        frozen_backbone = True
     else:
         raise ValueError(f"Unsupported model_type: {model_type}")
 
@@ -140,19 +150,60 @@ def main() -> None:
         progress_desc="eval hybridforensics",
     )
 
-    payload = {
-        "checkpoint": str(args.checkpoint),
-        "data_root": str(data_root),
-        "benchmark": "hybridforensics",
-        "model_type": model_type,
-        "accuracy": result.accuracy,
-        "auc": result.auc,
-        "f1": result.f1,
-        "loss": result.loss,
-        "num_samples": len(dataset),
-        "skipped_files": dataset.skipped_files,
-    }
-    print(payload)
+    payload = build_record_base(
+        record_type="eval_only",
+        stage="hybridforensics",
+        tags=["evaluation", model_type, "hybridforensics"],
+        seed=4210,
+        device=device,
+        script_path="baseline/evaluate_hybridforensics.py",
+    )
+    payload["experiment_id"] = f"{model_type}_hybridforensics_eval"
+    payload["run_id"] = "需手动填写"
+    payload["data"].update(
+        {
+            "train_data_root": "需手动填写",
+            "val_data_root": "需手动填写",
+            "test_data_root": "需手动填写",
+            "benchmark_data_root": str(data_root),
+            "train_split": "train",
+            "val_split": "val",
+            "test_split": "hybridforensics",
+            "bias_control": True,
+            "train_size_per_class": "需手动填写",
+            "input_resolution": 224,
+            "save_format": "jpeg",
+            "preprocess_note": "需手动填写",
+        }
+    )
+    payload["model"].update(
+        {
+            "model_name": model_type,
+            "method_family": "baseline",
+            "backbone": backbone,
+            "pretrained": checkpoint.get("pretrained", True),
+            "frozen_backbone": frozen_backbone,
+            "forensic_branch": "none",
+            "fusion_method": "none",
+        }
+    )
+    payload["training"]["enabled"] = False
+    payload["training"]["checkpoint_path"] = str(args.checkpoint)
+    payload["training"]["in_domain_test_metrics"] = result_to_metrics(result)
+    payload["evaluations"] = [
+        build_evaluation_entry(
+            checkpoint_path=args.checkpoint,
+            eval_type="cross_dataset",
+            data_root=data_root,
+            split="hybridforensics",
+            perturbation_type="none",
+            result=result,
+            num_samples=len(dataset),
+            skipped_files=dataset.skipped_files,
+            note="自动记录：HybridForensics 评估结果",
+        )
+    ]
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
     if args.save_json is not None:
         save_json(args.save_json, payload)
 
