@@ -49,6 +49,7 @@ baseline 跑完后，至少要回答下面三个问题：
 1. 在 `CIFAKE` 标准测试集上，模型是否能达到明显高于随机猜测的效果？
 2. 训练样本规模减小时，性能下降多少？
 3. 经过 JPEG 压缩或缩放后，性能又下降多少？
+4. 换到外部 benchmark `HybridForensics` 后，性能会下降多少？
 
 如果这三个问题没有明确答案，后续改进模型就没有“改进目标”。
 
@@ -87,6 +88,17 @@ baseline 跑完后，至少要回答下面三个问题：
 
 这说明 baseline 可能利用了预处理模式，而不是学到了真正稳定的真伪判别线索。
 
+### 失效现象 D：跨数据集掉点
+
+典型表现：
+
+1. 在 `CIFAKE` 标准测试集上表现很好
+2. 一旦换到 `HybridForensics` 这种外部 benchmark，AUC 和 Accuracy 明显下降
+
+解释意义：
+
+这说明模型对训练数据分布存在依赖，学到的特征不一定能够稳定迁移到更复杂的真实分布。
+
 ## 6. 建议记录表
 
 每次 baseline 实验都填一行：
@@ -98,6 +110,7 @@ baseline 跑完后，至少要回答下面三个问题：
 | b3 | yes | full train | test | jpeg85 |  |  |  |  |
 | b4 | yes | full train | test | jpeg75 |  |  |  |  |
 | b5 | yes | full train | test | resize |  |  |  |  |
+| b6 | yes | CIFAKE train | HybridForensics | none |  |  |  |  |
 
 ## 7. Baseline 阶段的最低交付物
 
@@ -105,15 +118,34 @@ baseline 跑完后，至少要回答下面三个问题：
 
 1. 一张 `full train vs small train` 性能对比表
 2. 一张压缩鲁棒性结果表
-3. 一段对“小样本训练 + 扰动条件”下失效原因的文字总结
+3. 一张外部 benchmark 结果表
+4. 一段对“小样本训练 + 扰动条件 + 跨数据集”下失效原因的文字总结
 
 这三项会直接成为答辩和报告中的“问题动机”部分。
 
-## 8. 本文档对应的执行结论
+## 8. 当前外部 benchmark 记录
+
+目前已经补充了 `HybridForensics` 作为第二 benchmark。该数据集共 `10000` 张图像，其中 `5000 real + 5000 fake`，假图同时包含 `ProGAN`、`StyleGAN3`、`SDXL` 和 `Midjourney`，因此比 `CIFAKE` 更适合作为外部测试集。
+
+当前首轮外部测试结果为：
+
+1. 模型：`MobileNetV3-Small`
+2. checkpoint：`baseline/outputs/mobilenet_v3_small/one_epoch_test/best.pt`
+3. `Accuracy = 0.5231`
+4. `AUC = 0.5919`
+5. `F1 = 0.6672`
+
+这个结果说明：
+
+1. 轻量 CNN baseline 在 `CIFAKE` 上训练后，迁移到外部 benchmark 时性能明显下降
+2. 仅在单一数据集上取得高分，并不意味着模型具备良好的跨数据集泛化能力
+3. 后续引入 `SRM` 或双流融合是有必要的，因为当前结果已经暴露出明显的数据集依赖
+## 9. 本文档对应的执行结论
 
 当前 baseline 口径已经固定为：
 
 1. 主 baseline：`CLIP ViT-B/32 + linear head`
 2. 对照 baseline：`ResNet18`、`MobileNetV3-Small`
-3. 核心观察：小样本性能下降、压缩敏感性、预处理影响
-4. 交付要求：至少拿到 3 组能支撑改进动机的结果
+3. 外部 benchmark：`HybridForensics`
+4. 核心观察：小样本性能下降、压缩敏感性、预处理影响、跨数据集掉点
+5. 交付要求：至少拿到 4 组能支撑改进动机的结果

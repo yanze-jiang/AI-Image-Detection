@@ -18,9 +18,11 @@ cifake.zip
 data/raw/
 data/processed/
 data/perturbed/
+data/benchmarks/*/raw/
 baseline/outputs/
 results/*.csv
 !results/results_template.csv
+!data/benchmarks/*/README.md
 
 # Model weights and logs
 *.pt

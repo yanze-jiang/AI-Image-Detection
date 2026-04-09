@@ -17,6 +17,9 @@
 5. `report_and_presentation.md`
    最终报告和 13 分钟答辩所需的核心图表、页数安排和常见答辩问题。
 
+6. `hybridforensics_note.md`
+   第二 benchmark `HybridForensics` 的数据说明、首轮外部测试结果和可直接用于报告的文字表述。
+
 ## 建议使用顺序
 
 如果你现在准备正式开工，建议按下面顺序推进：
