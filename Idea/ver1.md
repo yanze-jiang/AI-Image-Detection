@@ -60,6 +60,14 @@
 3. **分析泛化与失效原因**  
    比较单流和双流模型在原始测试集、不同压缩条件以及外部 benchmark 上的表现，并讨论模型到底利用了哪些特征。当前首轮外部测试已经显示：在 `CIFAKE` 上训练的轻量 CNN baseline 迁移到 `HybridForensics` 后仅取得约 `0.59` 的 AUC，这说明模型存在明显的数据集依赖，也为后续引入底层取证特征提供了直接动机。
 
+### 方法设计的理论支撑
+
+本项目采用双流融合并不是凭直觉堆结构，而是有较明确的文献依据。首先，从一般方法论上看，多视角表示学习（multi-view representation learning）强调：当不同视角包含互补信息时，表示融合通常比单一视角更稳健。`Li et al., A Survey of Multi-View Representation Learning, arXiv 2016 / TKDE 2018` 从“表示对齐”和“表示融合”两个角度系统总结了这一点，为“语义流 + 取证流”的设计提供了通用理论背景。
+
+其次，在图像取证任务中，`Zhou et al., Learning Rich Features for Image Manipulation Detection, CVPR 2018` 直接提出了 `RGB stream + noise stream` 的双流框架，其中噪声流利用 `SRM` 滤波器提取残差特征，并通过双线性池化与 RGB 特征融合。论文实验表明，该双流方法优于各自单流分支，并且对缩放和压缩具有更好的鲁棒性。这说明“高层视觉内容 + 底层噪声残差”的互补融合在取证任务中是有直接先例支持的。
+
+再次，频域和压缩痕迹分支同样有明确依据。`Kwon et al., CAT-Net: Compression Artifact Tracing Network for Detection and Localization of Image Splicing, WACV 2021` 采用 `RGB + DCT` 双流结构联合学习压缩伪影相关特征，说明空间域与频域信息联合建模是图像取证中的有效路线。与此一致，`Luo et al., Generalizing Face Forgery Detection With High-Frequency Features, CVPR 2021` 指出许多 CNN 检测器容易过拟合到特定生成方法的颜色纹理，而高频特征能够暴露更稳定的伪造痕迹，并在跨数据集场景下带来更好的泛化表现。对本项目而言，这几篇论文共同支持一个核心判断：当 baseline 在同分布数据上表现很好、但在外部 benchmark 上显著退化时，引入 `SRM` 残差或 `DCT` 频域分支的双流融合，是一种有理论基础且可解释的改进方向。
+
 如果时间允许，还会加入可解释性分析，如热力图或特征可视化，用于说明模型关注的是语义结构还是局部伪影。
 
 ## 6. 预期结果
@@ -92,3 +100,13 @@
 5. 整理结果、撰写报告并准备展示材料。
 
 该方案的优点是：**问题明确、技术路线清晰、具有一定创新性，并且在课程项目的时间和算力限制下可实现。**
+
+## 9. 代表性参考文献
+
+1. `Radford et al.`, *Learning Transferable Visual Models From Natural Language Supervision*, ICML 2021.
+2. `He et al.`, *Deep Residual Learning for Image Recognition*, CVPR 2016.
+3. `Howard et al.`, *Searching for MobileNetV3*, ICCV 2019.
+4. `Li, Yang, and Zhang`, *A Survey of Multi-View Representation Learning*, arXiv 2016 / IEEE TKDE 2018.
+5. `Zhou et al.`, *Learning Rich Features for Image Manipulation Detection*, CVPR 2018.
+6. `Kwon et al.`, *CAT-Net: Compression Artifact Tracing Network for Detection and Localization of Image Splicing*, WACV 2021.
+7. `Luo et al.`, *Generalizing Face Forgery Detection With High-Frequency Features*, CVPR 2021.
