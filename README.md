@@ -1,30 +1,36 @@
 # DDA4210 Course Project
 
-本仓库用于组内协作完成 AI 图像检测课程项目，当前内容包括项目方案、数据准备脚本、baseline 训练与评估代码，以及结果记录模板。
+本仓库用于完成课程项目 **“面向资源受限场景的 AI 生成图像检测”**。项目围绕 `CIFAKE` 训练集、压缩/缩放扰动测试，以及 `HybridForensics` 外部 benchmark 展开，目标是在有限算力条件下构建一个 **轻量、可复现、便于对比** 的图像真伪检测方案。
 
-## 仓库内容
+当前工程已经包含：
+
+- 数据准备与扰动构建脚本
+- `MobileNetV3-Small`、`ResNet18`、`CLIP + linear head` baseline
+- `HybridForensics` 外部测试脚本
+- 项目方案、实验计划与汇报材料草稿
+
+## 当前项目状态
+
+目前已经完成首轮 baseline 与外部 benchmark 验证。初步结果表明：模型在原训练分布上可以取得较高分数，但迁移到 `HybridForensics` 时性能明显下降，这说明跨数据集泛化仍然是本项目的核心问题，也构成后续双流融合模型的主要动机。
+
+后续改进方向为：
+
+- 语义流：预训练视觉编码器特征
+- 取证流：`SRM` 残差或 `DCT` 频域特征
+- 融合方式：特征拼接 + 小型 `MLP` 分类头
+
+## 仓库结构
 
 - `Idea/`：项目方案、数据协议、baseline 计划、融合模型计划、汇报材料建议
-- `scripts/`：数据集整理与扰动构建脚本
-- `baseline/`：`MobileNetV3-Small`、`ResNet18` 与 `CLIP + linear head` baseline
+- `scripts/`：数据准备、子集构建、扰动生成脚本
+- `baseline/`：baseline 训练、评估、结果记录与 `HybridForensics` 测试代码
 - `data/configs/`：数据准备配置
-- `results/`：结果记录模板
-
-## 协作约定
-
-为了保证仓库可直接在 GitHub 协作，本仓库默认不提交大体积数据、模型权重和训练输出，以下内容会保留在本地：
-
-- `data/raw/`
-- `data/processed/`
-- `data/perturbed/`
-- `baseline/outputs/`
-- `cifake.zip`
-
-如果组员需要相同数据，请按 `data/README.md` 中的流程自行下载和预处理，或通过共享网盘统一分发。
+- `data/benchmarks/hybridforensics/`：外部 benchmark 说明
+- `results/`：实验结果记录模板
 
 ## 环境依赖
 
-建议使用 Python 3.10+。
+建议使用 `Python 3.10+`。
 
 安装依赖：
 
@@ -34,14 +40,14 @@ pip install -r requirements.txt
 
 ## 快速开始
 
-1. 准备数据
+### 1. 准备 `CIFAKE`
 
 ```bash
 python "scripts/prepare_cifake.py" --config "data/configs/cifake.json"
 python "scripts/build_perturbations.py" --source-root "data/processed" --output-root "data/perturbed"
 ```
 
-2. 训练 baseline
+### 2. 训练 baseline
 
 ```bash
 python "baseline/train_mobilenetv3_small.py"
@@ -49,7 +55,7 @@ python "baseline/train_resnet18.py"
 python "baseline/train_clip.py"
 ```
 
-3. 评估模型
+### 3. 评估标准测试集
 
 ```bash
 python "baseline/evaluate.py" \
@@ -58,8 +64,44 @@ python "baseline/evaluate.py" \
   --split "test"
 ```
 
+### 4. 评估 `HybridForensics`
+
+```bash
+python "baseline/evaluate_hybridforensics.py" \
+  --checkpoint "baseline/outputs/mobilenet_v3_small/one_epoch_test/best.pt"
+```
+
+如需查看 baseline 训练与评估细节，请阅读 `baseline/README.md`。
+
+## GitHub 协作约定
+
+为了保证仓库适合组内协作，本仓库默认 **不提交** 大体积数据、模型权重和训练输出。以下内容应保留在本地或通过共享网盘分发：
+
+- `data/raw/`
+- `data/processed/`
+- `data/perturbed/`
+- `baseline/outputs/`
+- `cifake.zip`
+
+建议组内统一采用下面的协作流程：
+
+1. 每位成员从 `main` 拉取最新代码。
+2. 为自己的任务创建新分支，例如 `feat-dual-stream`、`docs-report-update`。
+3. 在个人分支提交并推送改动。
+4. 通过 GitHub `Pull Request` 合并到 `main`。
+
+常用命令：
+
+```bash
+git checkout -b feat-your-task
+git add .
+git commit -m "describe your change"
+git push -u origin feat-your-task
+```
+
 ## 进一步阅读
 
 - 项目说明：`Idea/README.md`
+- 方案初稿：`Idea/ver1.md`
 - 数据准备：`data/README.md`
 - baseline 说明：`baseline/README.md`
