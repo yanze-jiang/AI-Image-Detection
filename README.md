@@ -6,7 +6,7 @@
 
 - `Idea/`：项目方案、数据协议、baseline 计划、融合模型计划、汇报材料建议
 - `scripts/`：数据集整理与扰动构建脚本
-- `baseline/`：`ResNet18` 与 `CLIP + linear head` baseline
+- `baseline/`：`MobileNetV3-Small`、`ResNet18` 与 `CLIP + linear head` baseline
 - `data/configs/`：数据准备配置
 - `results/`：结果记录模板
 
@@ -44,6 +44,7 @@ python "scripts/build_perturbations.py" --source-root "data/processed" --output-
 2. 训练 baseline
 
 ```bash
+python "baseline/train_mobilenetv3_small.py"
 python "baseline/train_resnet18.py"
 python "baseline/train_clip.py"
 ```

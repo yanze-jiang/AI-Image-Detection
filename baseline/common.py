@@ -153,6 +153,16 @@ def build_resnet18(num_classes: int = 2, pretrained: bool = True) -> nn.Module:
     return model
 
 
+def build_mobilenet_v3_small(num_classes: int = 2, pretrained: bool = True) -> nn.Module:
+    weights = models.MobileNet_V3_Small_Weights.DEFAULT if pretrained else None
+    model = models.mobilenet_v3_small(weights=weights)
+    last_linear = model.classifier[-1]
+    if not isinstance(last_linear, nn.Linear):
+        raise TypeError("Expected MobileNetV3 classifier head to end with nn.Linear.")
+    model.classifier[-1] = nn.Linear(last_linear.in_features, num_classes)
+    return model
+
+
 def build_clip_classifier(model_name: str, num_classes: int = 2) -> nn.Module:
     return FrozenCLIPClassifier(model_name=model_name, num_classes=num_classes)
 

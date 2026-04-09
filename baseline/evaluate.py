@@ -9,6 +9,7 @@ import torch.nn as nn
 from common import (
     build_clip_classifier,
     build_loader,
+    build_mobilenet_v3_small,
     build_resnet18,
     evaluate,
     get_device,
@@ -52,6 +53,9 @@ def main() -> None:
 
     if model_type == "resnet18":
         model = build_resnet18(num_classes=2, pretrained=False)
+        transform_model_type = "resnet"
+    elif model_type == "mobilenet_v3_small":
+        model = build_mobilenet_v3_small(num_classes=2, pretrained=False)
         transform_model_type = "resnet"
     elif model_type == "clip":
         model = build_clip_classifier(model_name=checkpoint["clip_model_name"], num_classes=2)
