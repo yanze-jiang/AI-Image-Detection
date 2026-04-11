@@ -1,0 +1,106 @@
+{
+  "schema_version": "v1",
+  "record_type": "eval_only",
+  "experiment_id": "resnet18_test_eval",
+  "run_id": "需手动填写",
+  "date": "2026-04-11",
+  "owner": "需手动填写",
+  "stage": "baseline",
+  "tags": [
+    "evaluation",
+    "resnet18",
+    "in_domain_test"
+  ],
+  "include_in_report": false,
+  "include_in_ppt": false,
+  "git_commit": "6deeb253be4cb4b05d6566a832d737383651cab5",
+  "script_path": "baseline/evaluate.py",
+  "command": "e:/Projects/AI-Image-Detection/baseline/evaluate.py --checkpoint e:/Projects/AI-Image-Detection/baseline/outputs/resnet18/full/best.pt --data-root e:/Projects/AI-Image-Detection/data/hemg_processed --split test --save-json e:/Projects/AI-Image-Detection/baseline/outputs/resnet18/full/resnet18_full_test_clean.json",
+  "seed": 4210,
+  "device": "cpu",
+  "purpose": "需手动填写",
+  "hypothesis": "需手动填写",
+  "compare_to": [
+    "需手动填写"
+  ],
+  "data": {
+    "train_data_root": "需手动填写",
+    "val_data_root": "需手动填写",
+    "test_data_root": "e:\\Projects\\AI-Image-Detection\\data\\hemg_processed",
+    "benchmark_data_root": "需手动填写",
+    "train_split": "train",
+    "val_split": "val",
+    "test_split": "test",
+    "bias_control": true,
+    "train_size_per_class": "需手动填写",
+    "input_resolution": 224,
+    "save_format": "jpeg",
+    "preprocess_note": "需手动填写"
+  },
+  "model": {
+    "model_name": "resnet18",
+    "method_family": "baseline",
+    "backbone": "ResNet18",
+    "pretrained": true,
+    "frozen_backbone": false,
+    "forensic_branch": "none",
+    "fusion_method": "none"
+  },
+  "training": {
+    "enabled": false,
+    "output_dir": "",
+    "checkpoint_path": "e:\\Projects\\AI-Image-Detection\\baseline\\outputs\\resnet18\\full\\best.pt",
+    "loss_fn": "CrossEntropyLoss",
+    "optimizer": "AdamW",
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "epochs": 10,
+    "patience": 3,
+    "best_epoch": null,
+    "train_loss": null,
+    "val_metrics": {
+      "accuracy": null,
+      "auc": null,
+      "f1": null,
+      "loss": null
+    },
+    "in_domain_test_metrics": {
+      "accuracy": 0.9682404557658306,
+      "auc": 0.9959194677616212,
+      "f1": 0.9702179920171937,
+      "loss": 0.0817219820904965
+    }
+  },
+  "evaluations": [
+    {
+      "eval_id": "需手动填写",
+      "enabled": true,
+      "checkpoint_path": "baseline\\outputs\\resnet18\\full\\best.pt",
+      "eval_type": "in_domain_test",
+      "data_root": "data\\hemg_processed",
+      "split": "test",
+      "perturbation": {
+        "type": "none",
+        "jpeg_quality": null,
+        "resize_setting": null
+      },
+      "metrics": {
+        "accuracy": 0.9682404557658306,
+        "auc": 0.9959194677616212,
+        "f1": 0.9702179920171937,
+        "loss": 0.0817219820904965
+      },
+      "num_samples": 15271,
+      "skipped_files": [],
+      "note": "自动记录：评估脚本输出"
+    }
+  ],
+  "summary": {
+    "main_finding": "需手动填写",
+    "failure_mode": "需手动填写",
+    "is_abnormal": false,
+    "next_action": "需手动填写",
+    "report_sentence": "需手动填写"
+  }
+}

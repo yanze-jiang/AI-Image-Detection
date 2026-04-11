@@ -1,0 +1,147 @@
+{
+  "schema_version": "v1",
+  "record_type": "train_and_eval",
+  "experiment_id": "resnet18_small_1000_train_and_eval",
+  "run_id": "resnet18_small_1000",
+  "date": "2026-04-11",
+  "owner": "需手动填写",
+  "stage": "baseline",
+  "tags": [
+    "baseline",
+    "resnet18"
+  ],
+  "include_in_report": false,
+  "include_in_ppt": false,
+  "git_commit": "6deeb253be4cb4b05d6566a832d737383651cab5",
+  "script_path": "baseline/train_resnet18.py",
+  "command": "baseline/train_resnet18.py --data-root data/hemg_processed --small-train-count 1000 --epochs 5",
+  "seed": 4210,
+  "device": "cpu",
+  "purpose": "需手动填写",
+  "hypothesis": "需手动填写",
+  "compare_to": [
+    "需手动填写"
+  ],
+  "data": {
+    "train_data_root": "data\\hemg_processed",
+    "val_data_root": "data\\hemg_processed",
+    "test_data_root": "data\\hemg_processed",
+    "benchmark_data_root": "需手动填写",
+    "train_split": "train",
+    "val_split": "val",
+    "test_split": "test",
+    "bias_control": true,
+    "train_size_per_class": "1000",
+    "input_resolution": 224,
+    "save_format": "jpeg",
+    "preprocess_note": "需手动填写"
+  },
+  "model": {
+    "model_name": "resnet18",
+    "method_family": "baseline",
+    "backbone": "ResNet18",
+    "pretrained": true,
+    "frozen_backbone": false,
+    "forensic_branch": "none",
+    "fusion_method": "none"
+  },
+  "training": {
+    "enabled": true,
+    "output_dir": "baseline\\outputs\\resnet18\\small_1000",
+    "checkpoint_path": "baseline\\outputs\\resnet18\\small_1000\\best.pt",
+    "loss_fn": "CrossEntropyLoss",
+    "optimizer": "AdamW",
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "batch_size": 32,
+    "epochs": 5,
+    "patience": 3,
+    "best_epoch": 5,
+    "train_loss": 0.07569546093046665,
+    "val_metrics": {
+      "accuracy": 0.886647894702377,
+      "auc": 0.9562747212291415,
+      "f1": 0.8979303024942509,
+      "loss": 0.3448735262468485
+    },
+    "in_domain_test_metrics": {
+      "accuracy": 0.886058542335145,
+      "auc": 0.9572659554876578,
+      "f1": 0.8978633482038038,
+      "loss": 0.34530715517800714
+    }
+  },
+  "evaluations": [
+    {
+      "eval_id": "需手动填写",
+      "enabled": true,
+      "checkpoint_path": "baseline\\outputs\\resnet18\\small_1000\\best.pt",
+      "eval_type": "in_domain_test",
+      "data_root": "data\\hemg_processed",
+      "split": "test",
+      "perturbation": {
+        "type": "none",
+        "jpeg_quality": null,
+        "resize_setting": null
+      },
+      "metrics": {
+        "accuracy": 0.886058542335145,
+        "auc": 0.9572659554876578,
+        "f1": 0.8978633482038038,
+        "loss": 0.34530715517800714
+      },
+      "num_samples": 15271,
+      "skipped_files": [],
+      "note": "自动记录：标准测试集结果"
+    }
+  ],
+  "summary": {
+    "main_finding": "需手动填写",
+    "failure_mode": "需手动填写",
+    "is_abnormal": false,
+    "next_action": "需手动填写",
+    "report_sentence": "需手动填写"
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.42630733919143676,
+      "val_loss": 0.44961225427553,
+      "val_accuracy": 0.81415755353284,
+      "val_auc": 0.9345544555273863,
+      "val_f1": 0.8461788617886179
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.1917821056842804,
+      "val_loss": 0.305550730928645,
+      "val_accuracy": 0.8739440770087094,
+      "val_auc": 0.953549128383745,
+      "val_f1": 0.8753480541345593
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.09423100048303604,
+      "val_loss": 0.3275261781892626,
+      "val_accuracy": 0.8799685678737477,
+      "val_auc": 0.9527669126417808,
+      "val_f1": 0.89185202666824
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.06463534043729305,
+      "val_loss": 0.3949663736244256,
+      "val_accuracy": 0.8578351123043677,
+      "val_auc": 0.9527234299019832,
+      "val_f1": 0.8541680660979378
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.07569546093046665,
+      "val_loss": 0.3448735262468485,
+      "val_accuracy": 0.886647894702377,
+      "val_auc": 0.9562747212291415,
+      "val_f1": 0.8979303024942509
+    }
+  ]
+}
