@@ -6,7 +6,7 @@ This is the only folder intended for submission and GitHub upload.
 
 ```text
 Code/
-  baseline/       # unified baseline: ResNet18, MobileNetV3-Small, frozen CLIP
+  baseline/       # unified baseline: ResNet18 and frozen CLIP
   new_model/      # causal FIND model
   data/           # dataset download/preparation scripts and manifests
   README.md
@@ -70,7 +70,6 @@ Run from inside `Code/`:
 
 ```bash
 python baseline/train.py --model resnet18
-python baseline/train.py --model mobilenet_v3_small
 python baseline/train.py --model clip
 ```
 

@@ -51,7 +51,6 @@ MNW 假图会优先从 `data/manifests/test.csv` 读取；该文件当前只保�
 
 ```bash
 python baseline/train.py --model resnet18
-python baseline/train.py --model mobilenet_v3_small
 python baseline/train.py --model clip
 ```
 

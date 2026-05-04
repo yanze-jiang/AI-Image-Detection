@@ -234,15 +234,6 @@ def build_model(model_type: str, pretrained: bool = True, clip_model_name: str =
         model.fc = nn.Linear(model.fc.in_features, 2)
         return model
 
-    if model_type == "mobilenet_v3_small":
-        weights = models.MobileNet_V3_Small_Weights.DEFAULT if pretrained else None
-        model = models.mobilenet_v3_small(weights=weights)
-        last_linear = model.classifier[-1]
-        if not isinstance(last_linear, nn.Linear):
-            raise TypeError("Expected MobileNetV3 classifier head to end with nn.Linear.")
-        model.classifier[-1] = nn.Linear(last_linear.in_features, 2)
-        return model
-
     if model_type == "clip":
         return FrozenCLIPClassifier(model_name=clip_model_name, num_classes=2)
 

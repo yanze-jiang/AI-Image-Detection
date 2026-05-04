@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        choices=["resnet18", "mobilenet_v3_small", "clip"],
+        choices=["resnet18", "clip"],
         default="resnet18",
     )
     parser.add_argument("--data-root", type=Path, default=PROJECT_ROOT / "data" / "tiny-genimage")
