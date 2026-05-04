@@ -16,6 +16,9 @@ env/
 # Large datasets and generated artifacts
 cifake.zip
 data/
+!Code/data/
+!Code/data/**/
+Archive/
 baseline/outputs/
 results/*.csv
 !results/results_template.csv

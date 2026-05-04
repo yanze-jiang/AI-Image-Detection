@@ -1,0 +1,13 @@
+numpy
+pillow
+scikit-learn
+torch
+torchvision
+tqdm
+transformers
+datasets
+huggingface_hub
+matplotlib
+ftfy
+regex
+clip @ git+https://github.com/openai/CLIP.git
